@@ -7,7 +7,10 @@
         justifyContent: 'space-between',
       }"
     >
-      <h4>总共 {{ todoInject.todoList.value.value?.length || 0 }} 项</h4>
+      <h4>
+        当前 {{ todoInject.currentLength.value }} 项 / 总共
+        {{ todoInject.realLength.value }} 项
+      </h4>
       <a-button-group>
         <a-button type="link" @click="handleClick(showType.all)"
           >显示全部</a-button

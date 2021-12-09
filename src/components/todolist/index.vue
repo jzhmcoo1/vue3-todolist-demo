@@ -28,10 +28,7 @@
         </a-input-search>
       </div>
     </template>
-    <a-list
-      item-layout="horizontal"
-      :data-source="todoInject.todoList.value.value"
-    >
+    <a-list item-layout="horizontal" :data-source="todoInject.todoList.value">
       <template #renderItem="{ item }">
         <a-list-item
           :key="item.id"
@@ -75,9 +72,7 @@ dayjs.extend(relativeTime);
 
 const todoInject = useTodoInject();
 const todo = reactive({
-  id: '',
   content: '',
-  done: false,
 });
 
 const format = (item: TodoItem) => {

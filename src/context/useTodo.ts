@@ -3,8 +3,11 @@ import {
   ComputedRef,
   inject,
   provide,
+  reactive,
   Ref,
   ref,
+  toRefs,
+  toRef,
   WritableComputedRef,
 } from 'vue';
 import TodoItem, { showType } from '@/typings/TodoItem';
@@ -25,57 +28,63 @@ interface TodoProvider {
   allDone: WritableComputedRef<boolean>;
   deleteDone: () => void;
   handleShowState: (msg: showType) => void;
+  currentLength: ComputedRef<number>;
+  realLength: ComputedRef<number>;
 }
 
 const TodoSymbol = Symbol('todo symbol');
 
 export function useTodoProvide() {
-  const todoList = ref<TodoItem[]>(initTodoList());
-  const showState = ref<showType>(showType.all);
+  const todoState = reactive({
+    todoList: initTodoList(),
+    showState: showType.all,
+  });
 
   const addTodoItem = (todoItem: TodoItem) => {
-    todoList.value.unshift(todoItem);
+    todoState.todoList.unshift(todoItem);
   };
 
   const deleteItemById = (id: string) => {
-    const index = todoList.value.findIndex((item) => item.id === id);
+    const index = todoState.todoList.findIndex((item) => item.id === id);
     if (index !== -1) {
-      todoList.value.splice(index, 1);
+      todoState.todoList.splice(index, 1);
     }
   };
 
   const checkedAll = () => {
-    todoList.value.forEach((item) => {
+    todoState.todoList.forEach((item) => {
       item.done = true;
     });
   };
 
   const cancelAll = () => {
-    todoList.value.forEach((item) => {
+    todoState.todoList.forEach((item) => {
       item.done = false;
     });
   };
 
   const computedTodoList = computed(() => {
-    if (showState.value === showType.all) {
-      return todoList;
-    } else if (showState.value === showType.done) {
-      return todoList.value.filter((item) => item.done);
+    if (todoState.showState === showType.all) {
+      return todoState.todoList;
+    } else if (todoState.showState === showType.done) {
+      return todoState.todoList.filter((item) => item.done === true);
     } else {
-      return todoList.value.filter((item) => !item.done);
+      return todoState.todoList.filter((item) => item.done === false);
     }
   });
 
+  const realLength = computed(() => todoState.todoList.length);
+  const currentLength = computed(() => computedTodoList.value.length);
+
   const handleShowState = (msg: showType) => {
-    showState.value = msg;
-    console.log(showState);
+    todoState.showState = msg;
   };
 
   const allDone = computed<boolean>({
     get() {
       return (
-        todoList.value.length !== 0 &&
-        todoList.value.every((item) => item.done === true)
+        todoState.todoList.length !== 0 &&
+        todoState.todoList.every((item) => item.done === true)
       );
     },
     set(newValue) {
@@ -88,7 +97,7 @@ export function useTodoProvide() {
   });
 
   const deleteDone = () => {
-    todoList.value = todoList.value.filter((item) => !item.done);
+    todoState.todoList = todoState.todoList.filter((item) => !item.done);
   };
 
   provide(TodoSymbol, {
@@ -98,6 +107,8 @@ export function useTodoProvide() {
     allDone,
     deleteDone,
     handleShowState,
+    realLength,
+    currentLength,
   });
 }
 
