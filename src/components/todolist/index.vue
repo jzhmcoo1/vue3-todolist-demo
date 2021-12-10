@@ -28,11 +28,7 @@
         </a-input-search>
       </div>
     </template>
-    <a-list
-      :bordered="true"
-      item-layout="horizontal"
-      :data-source="todoInject.todoList.value"
-    >
+    <a-list item-layout="horizontal" :data-source="todoInject.todoList.value">
       <template #renderItem="{ item }">
         <a-list-item
           :key="item.id"

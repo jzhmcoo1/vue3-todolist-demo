@@ -7,6 +7,7 @@ import {
   Ref,
   WritableComputedRef,
   watchEffect,
+  toRef,
 } from 'vue';
 import TodoItem, { showType } from '@/typings/TodoItem';
 import storage from '@/utils/storage';
@@ -48,6 +49,7 @@ interface TodoProvider {
   currentLength: ComputedRef<number>;
   realLength: ComputedRef<number>;
   editTodo: (id: string, content: string) => void;
+  showState: Ref<showType>;
 }
 
 const TodoSymbol = Symbol('todo symbol');
@@ -139,6 +141,7 @@ export function useTodoProvide() {
     realLength,
     currentLength,
     editTodo,
+    showState: toRef(todoState, 'showState'),
   });
 }
 

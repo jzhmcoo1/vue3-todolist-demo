@@ -12,13 +12,25 @@
         {{ todoInject.realLength.value }} 项
       </h4>
       <a-button-group>
-        <a-button type="link" @click="handleClick(showType.all)"
+        <a-button
+          :type="`${
+            showType.all === todoInject.showState.value ? 'text' : 'link'
+          }`"
+          @click="handleClick(showType.all)"
           >显示全部</a-button
         >
-        <a-button type="link" @click="handleClick(showType.done)"
+        <a-button
+          :type="`${
+            showType.done === todoInject.showState.value ? 'text' : 'link'
+          }`"
+          @click="handleClick(showType.done)"
           >显示已完成</a-button
         >
-        <a-button type="link" @click="handleClick(showType.todo)"
+        <a-button
+          :type="`${
+            showType.todo === todoInject.showState.value ? 'text' : 'link'
+          }`"
+          @click="handleClick(showType.todo)"
           >显示未完成</a-button
         >
         <a-button type="link" danger @click="handleDelete">清空已完成</a-button>
@@ -38,6 +50,7 @@ const handleClick = (msg: showType) => {
 const handleDelete = () => {
   todoInject.deleteDone();
 };
+console.log(todoInject.showState.value);
 </script>
 
 <script lang="ts">
