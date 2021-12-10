@@ -4,6 +4,8 @@
 
 ref、reactive、computedRef 套的有点乱，需要改进
 
+双击可编辑，enter保存，esc退出
+
 ## 效果图
 
-![效果图](./pic.png)
+见网站[demo](vue3-todolist-demo.vercel.app)
