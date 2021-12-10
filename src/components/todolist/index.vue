@@ -28,7 +28,11 @@
         </a-input-search>
       </div>
     </template>
-    <a-list item-layout="horizontal" :data-source="todoInject.todoList.value">
+    <a-list
+      :bordered="true"
+      item-layout="horizontal"
+      :data-source="todoInject.todoList.value"
+    >
       <template #renderItem="{ item }">
         <a-list-item
           :key="item.id"
@@ -37,7 +41,21 @@
         >
           <a-list-item-meta :description="format(item)">
             <template #title>
-              <p :style="{ fontSize: '1rem' }">{{ item.content }}</p>
+              <p
+                v-show="editState.editId !== item.id"
+                :style="{ fontSize: '1rem' }"
+                :class="{ doneTodo: item.done }"
+                @dblclick="editTodo(item)"
+              >
+                {{ item.content }}
+              </p>
+              <a-input
+                v-show="editState.editId === item.id"
+                v-model:value="editState.editContent"
+                @keyup.esc="escEdit"
+                v-todo-foucs="item.id === editState.editId"
+                @pressEnter="saveEdit"
+              />
             </template>
             <template #avatar>
               <a-checkbox v-model:checked="item.done" />
@@ -61,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { DirectiveBinding, reactive } from 'vue';
 import { nanoid } from 'nanoid';
 import { useTodoInject } from '@/context';
 import TodoItem from '@/typings/TodoItem';
@@ -75,6 +93,11 @@ const todo = reactive({
   content: '',
 });
 
+const editState = reactive({
+  editContent: '',
+  editId: '',
+});
+
 const format = (item: TodoItem) => {
   return dayjs(item.date).fromNow();
 };
@@ -84,7 +107,7 @@ const deleteItem = (item: TodoItem) => {
 };
 
 const handleAddTodoItem = (content: string) => {
-  if (content.length === 0) {
+  if (content.trim() === '') {
     message.warn('输入内容不能为空');
     return;
   }
@@ -99,12 +122,38 @@ const handleAddTodoItem = (content: string) => {
   todo.content = '';
 };
 
-console.log(todoInject.allDone);
+const editTodo = (todoItem: TodoItem) => {
+  editState.editContent = todoItem.content;
+  editState.editId = todoItem.id;
+
+  console.log('当前编辑', editState.editContent, editState.editId);
+};
+
+const escEdit = () => {
+  editState.editId = '';
+  editState.editContent = '';
+};
+
+const saveEdit = () => {
+  todoInject.editTodo(editState.editId, editState.editContent);
+  editState.editId = '';
+  editState.editContent = '';
+};
 </script>
 
 <script lang="ts">
 export default {
   name: 'todolist',
+  directives: {
+    'todo-foucs': (
+      el: HTMLInputElement,
+      bindings: DirectiveBinding<HTMLInputElement>
+    ) => {
+      if (bindings.value) {
+        el.focus();
+      }
+    },
+  },
 };
 </script>
 
@@ -127,5 +176,10 @@ export default {
 /* .slide-fade-leave-active 用于 2.1.8 以下版本 */ {
   /* transform: translateX(10px); */
   opacity: 0;
+}
+
+.doneTodo {
+  text-decoration: line-through;
+  color: #ddd;
 }
 </style>

@@ -47,6 +47,7 @@ interface TodoProvider {
   handleShowState: (msg: showType) => void;
   currentLength: ComputedRef<number>;
   realLength: ComputedRef<number>;
+  editTodo: (id: string, content: string) => void;
 }
 
 const TodoSymbol = Symbol('todo symbol');
@@ -78,6 +79,13 @@ export function useTodoProvide() {
     todoState.todoList.forEach((item) => {
       item.done = false;
     });
+  };
+
+  const editTodo = (id: string, content: string) => {
+    const index = todoState.todoList.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      todoState.todoList[index].content = content;
+    }
   };
 
   const computedTodoList = computed(() => {
@@ -130,6 +138,7 @@ export function useTodoProvide() {
     handleShowState,
     realLength,
     currentLength,
+    editTodo,
   });
 }
 
