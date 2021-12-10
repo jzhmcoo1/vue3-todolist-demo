@@ -76,7 +76,7 @@ const todo = reactive({
 });
 
 const format = (item: TodoItem) => {
-  return item.date.fromNow();
+  return dayjs(item.date).fromNow();
 };
 
 const deleteItem = (item: TodoItem) => {
@@ -92,7 +92,7 @@ const handleAddTodoItem = (content: string) => {
     id: nanoid(),
     content,
     done: false,
-    date: dayjs(),
+    date: dayjs().toJSON(),
     hover: false,
   };
   todoInject.addTodoItem(_todo);

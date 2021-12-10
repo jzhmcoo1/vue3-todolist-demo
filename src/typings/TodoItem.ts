@@ -3,7 +3,7 @@ export default interface TodoItem {
   id: string;
   content: string;
   done: boolean;
-  date: dayjs.Dayjs;
+  date: string;
   hover: false;
 }
 

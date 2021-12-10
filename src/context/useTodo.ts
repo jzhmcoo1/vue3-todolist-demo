@@ -5,19 +5,36 @@ import {
   provide,
   reactive,
   Ref,
-  ref,
-  toRefs,
-  toRef,
   WritableComputedRef,
+  watchEffect,
 } from 'vue';
 import TodoItem, { showType } from '@/typings/TodoItem';
+import storage from '@/utils/storage';
 import dayjs from 'dayjs';
 
 const initTodoList: () => TodoItem[] = () => {
   return [
-    { id: '001', content: '吃饭', done: false, date: dayjs(), hover: false },
-    { id: '002', content: '睡觉', done: false, date: dayjs(), hover: false },
-    { id: '003', content: '打代码', done: false, date: dayjs(), hover: false },
+    {
+      id: '001',
+      content: '吃饭',
+      done: false,
+      date: dayjs().toJSON(),
+      hover: false,
+    },
+    {
+      id: '002',
+      content: '睡觉',
+      done: false,
+      date: dayjs().toJSON(),
+      hover: false,
+    },
+    {
+      id: '003',
+      content: '打代码',
+      done: false,
+      date: dayjs().toJSON(),
+      hover: false,
+    },
   ];
 };
 
@@ -36,7 +53,7 @@ const TodoSymbol = Symbol('todo symbol');
 
 export function useTodoProvide() {
   const todoState = reactive({
-    todoList: initTodoList(),
+    todoList: storage.has() ? storage.fetch() : initTodoList(),
     showState: showType.all,
   });
 
@@ -99,6 +116,10 @@ export function useTodoProvide() {
   const deleteDone = () => {
     todoState.todoList = todoState.todoList.filter((item) => !item.done);
   };
+
+  watchEffect(() => {
+    storage.save(todoState.todoList);
+  });
 
   provide(TodoSymbol, {
     todoList: computedTodoList,
